@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang='en' class=''>
+<head>
+<meta charset='UTF-8'>
+<title>Mother's Day Card</title>
+ 
+<style class="INLINE_PEN_STYLESHEET_ID">
+    body, div, h1, h2, form, fieldset, input, textarea, footer, p {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: none;
+}
+ 
+body { 
+	-webkit-perspective:800px;
+	background: none; /* 设置背景为空白 */
+	color: #7c7873;
+-webkit-animation: bugfix infinite 1s; 
+}
+ 
+@-webkit-keyframes bugfix { 
+  from {padding:0;} 
+  to {padding:0;} 
+}
+ 
+p {
+	font-family: 'Arvo', serif;
+	font-size: 20px;
+	text-shadow: 0 1px 0 #fff;
+	color: #C3447A;
+	opacity: 0;
+}
+ 
+#wrap{
+	width: 530px;
+	height: 1000px;
+	margin: 20px auto 0;
+}
+ 
+h1{
+	font-family: 'Palatino', sans-serif;
+	font-size: 48px;
+	margin: 50px 0;
+	text-align: center;
+	color: #D65076;
+	text-shadow: 0 3px 0 #fff;
+}
+ 
+#letter_wrap {
+	overflow: hidden;
+	height: 446px;
+	position: relative;
+	top: 0px;
+	transition: all 1s ease-in-out;
+}
+ 
+#back {
+	position: absolute;
+	bottom: 128px;
+	left: 0px;
+	background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/144467/before1.png');
+	width: 530px;
+	height: 132px;
+}
+ 
+#flap{
+	position: absolute;
+	bottom: 65px;
+	left: 0px;
+	width: 530px;
+	height: 390px;
+	transform-style: preserve-3d;
+	z-index: 5;
+	transition: all 1.5s 1s linear;
+}
+ 
+#flap>div{
+	backface-visibility: hidden;
+	display: block;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+}
+ 
+#open_flap {
+	top: 195px;
+	background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/144467/flap.png') no-repeat;
+	transform: rotateY(-180deg);
+}
+ 
+#closed_flap {
+	top: 0%;
+	background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/144467/flap_closed.png') no-repeat 0 195px;
+}
+ 
+#front {
+	position: absolute;
+	bottom: 0px;
+	left: 0px;
+	background: url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/144467/after.png');
+	width: 530px;
+	height: 260px;
+}
+ 
+.checkbox{
+	position: absolute;
+	opacity: 0;
+	top: 0;
+	left: 0;
+	width: 70%;
+	height: 70%;
+	z-index: 100;
+}
+ 
+#checkbox:checked + #letter_wrap {
+	height: 776px;
+	top: -200px;
+	transition: all 1s ease-in-out 2s;
+}
+ 
+#letter {
+	transition: all 1s ease-in-out;
+	background: #ffc url('https://s3-us-west-2.amazonaws.com/s.cdpn.io/144467/letter_bg.png');
+	position: relative;
+	top: 200px;
+	overflow: hidden;
+	height: 190px;
+	width: 400px;
+	margin: 0 auto;
+	padding: 20px;
+	border: 1px solid #fff;
+	border-radius: 3px;
+	box-shadow: 0px 0px 3px #9d9d9d, inset 0px 0px 27px #fff;
+}
+ 
+#checkbox:checked + #letter_wrap > #flap{
+	transition: all 2s linear;
+	transform: rotateX(180deg);
+	z-index: -1;
+}
+ 
+#checkbox:checked + #letter_wrap > #letter{
+	height: 520px;
+	transition: all 1s ease-in-out 2s;
+}
+ 
+#checkbox:checked + #letter_wrap > #letter > p{
+	opacity: 1;
+	transition: opacity 1s ease-in-out 2s;
+}
+
+/* Heart Rain Effect */
+
+canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	z-index: 1;
+}
+
+</style>
+ 
+</head>
+<body>
+<div id="wrap">
+<h1>您收到一封信!</h1>
+<input type="checkbox" id="checkbox" class="checkbox">
+<div id="letter_wrap">
+<label for="checkbox" class="handle" onclick></label>
+<div id="back"></div>
+<div id="flap">
+<div id="closed_flap"></div>
+<div id="open_flap"></div>
+</div>
+<div id="letter">
+<p>To:亲爱的毛毛</p>
+</br>
+<p></p>
+</br>
+<p  style="font-size:16px; color:green;" ></p>
+</br>
+<p>祝我妈母亲节快乐，每天开心！！！</p>
+<p></p>
+</br>
+<p>by:爱你的小睿</p>
+</br>
+</br>
+<p></p>
+<p></p>
+<p style="font-size:12px;">Happy Every Day</p>
+</div>
+<div id="front"></div>
+</div>
+ 
+</div>
+
+<!-- Heart Rain Script -->
+<script>
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    document.body.appendChild(canvas);
+
+    let heartImages = [];
+    let heartCount = 30;
+
+    for (let i = 1; i <= 5; i++) {
+        let img = new Image();
+        img.src = `https://emojicdn.elk.sh/♥️`;
+        heartImages.push(img);
+    }
+
+    let hearts = [];
+
+    function createHeart() {
+        const x = Math.random() * canvas.width;
+        const y = -10;
+        const speed = Math.random() * 2 + 2;
+        const size = Math.random() * 30 + 10;
+        const image = heartImages[Math.floor(Math.random() * heartImages.length)];
+        hearts.push({ x, y, speed, size, image });
+    }
+
+    function drawHearts() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        hearts.forEach((heart, index) => {
+            ctx.drawImage(heart.image, heart.x, heart.y, heart.size, heart.size);
+            heart.y += heart.speed;
+            if (heart.y > canvas.height) {
+                hearts.splice(index, 1);
+            }
+        });
+    }
+
+    function animate() {
+    
+        if (Math.random() < 0.1) {
+            createHeart();
+        }
+        drawHearts();
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    window.addEventListener("resize", function () {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    });
+</script>
+
+</body>
+</html>
