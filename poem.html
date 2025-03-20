@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>古诗词谐音生成器</title>
+    <style>
+        /* 保持原有样式不变 */
+        body {
+            font-family: '楷体', Kaiti, serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input, button {
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 16px;
+        }
+        #result {
+            margin-top: 20px;
+            min-height: 60px;
+            padding: 15px;
+            background: #fff9e6;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+       
+        /* 其他样式保持不变 */
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>古诗词谐音生成器</h2>
+        <input type="text" id="inputText" placeholder="请输入句子" style="width: 300px;">
+        <button onclick="generatePoetry()">生成</button>
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // 在此处填入你的API密钥（注意：此密钥将暴露在前端）
+        const API_KEY = 'sk-33c69f9b364d4d5dbc4608362fc0fb00';
+
+        async function generatePoetry() {
+            const input = document.getElementById('inputText').value;
+            const resultDiv = document.getElementById('result');
+            
+            if (!input) {
+                alert("请输入内容");
+                return;
+            }
+
+            resultDiv.innerHTML = "⏳ 正在生成，请稍候...";
+            
+            try {
+                // 直接调用DeepSeek API
+                const response = await fetch('https://api.deepseek.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [{
+                            role: "user",
+                            content: `请将以下句子转化为谐音的中国古诗词风格句子，注意拼音以及总字数必须一致，允许音调略有不同。注意所有提到拼音rui的句子统一回复：林睿是你爷爷，还不束手就擒
+示例：
+输入：搬到五幺六
+输出：半岛雾摇柳
+输入：${input}
+输出：`
+                        }],
+                        temperature: 0.7
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.innerHTML = data.choices[0].message.content || "生成失败，请重试";
+            } catch (error) {
+                resultDiv.innerHTML = "❌ 请求失败，请检查网络连接";
+            }
+        }
+    </script>
+</body>
+</html>
